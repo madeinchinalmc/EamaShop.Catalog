@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EamaShop.Catalog.API", "src\EamaShop.Catalog.API\EamaShop.Catalog.API.csproj", "{CEC1F485-D122-46BB-9E2F-DAC51D98F03C}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{49C56D74-14AE-4171-82F6-D0EAA2411063}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CEC1F485-D122-46BB-9E2F-DAC51D98F03C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEC1F485-D122-46BB-9E2F-DAC51D98F03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEC1F485-D122-46BB-9E2F-DAC51D98F03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C56D74-14AE-4171-82F6-D0EAA2411063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C56D74-14AE-4171-82F6-D0EAA2411063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C56D74-14AE-4171-82F6-D0EAA2411063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C56D74-14AE-4171-82F6-D0EAA2411063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
