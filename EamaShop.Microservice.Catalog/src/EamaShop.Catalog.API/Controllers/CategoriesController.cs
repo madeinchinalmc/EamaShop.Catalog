@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EamaShop.Catalog.API.Controllers
 {
+    /// <summary>
+    /// 商品分类接口
+    /// </summary>
     [Produces("application/json")]
     [Route("api/Categories")]
     public class CategoriesController : Controller
@@ -21,16 +24,13 @@ namespace EamaShop.Catalog.API.Controllers
             _context = context;
         }
 
-        // GET: api/Categories
-        [HttpGet]
-        public IEnumerable<Category> GetCategory()
-        {
-            return _context.Category;
-        }
-
-        // GET: api/Categories/5
+        /// <summary>
+        /// 获取商品类目信息
+        /// </summary>
+        /// <param name="id">可选的 不传则获取所有顶级分类，否则获取指定分类下的子类列表</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory([FromRoute] long id)
+        public async Task<IActionResult> GetCategory([FromRoute] long id = 0)
         {
             if (!ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace EamaShop.Catalog.API.Controllers
             {
                 if (!CategoryExists(id))
                 {
-                    return NotFound(new { Message="分类不存在，无法修改"});
+                    return NotFound(new { Message = "分类不存在，无法修改" });
                 }
                 else
                 {

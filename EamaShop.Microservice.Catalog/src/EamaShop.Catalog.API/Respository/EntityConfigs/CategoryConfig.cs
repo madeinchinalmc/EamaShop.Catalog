@@ -13,11 +13,8 @@ namespace EamaShop.Catalog.API.Respository.EntityConfigs
         {
             builder.HasKey(x => x.Id);
             builder.HasIndex(x => x.Name);
-            builder.HasIndex(x => x.ParentId);
             builder.HasIndex(x => x.StoreId);
-
             builder.Property(x => x.Name).IsRequired();
-            
         }
     }
 }

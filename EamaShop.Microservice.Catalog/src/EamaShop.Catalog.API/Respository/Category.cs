@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace EamaShop.Catalog.API.Respository
 {
     /// <summary>
-    /// 商品分类
+    /// 商家自定义的商品分类
     /// </summary>
     public class Category
     {
@@ -26,14 +26,9 @@ namespace EamaShop.Catalog.API.Respository
         [Required]
         [StringLength(30, MinimumLength = 4)]
         public string Name { get; set; }
-
-        [Range(1, long.MaxValue)]
-        public long ParentId { get; set; }
         /// <summary>
-        /// 层级
+        /// 分类的类型
         /// </summary>
-        public int Level { get; set; }
-
-        public IEnumerable<Product> Products { get; set; }
+        public CategoryType Type { get; set; }
     }
 }

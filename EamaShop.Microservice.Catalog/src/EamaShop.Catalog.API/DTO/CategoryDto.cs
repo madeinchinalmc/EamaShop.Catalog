@@ -24,11 +24,8 @@ namespace EamaShop.Catalog.API.DTO
                 throw new ArgumentNullException(nameof(category));
             }
 
-            Debug.Assert(category.Products == null || !category.Products.Any());
             Id = category.Id;
             Name = category.Name;
-            ParentId = category.ParentId;
-            Level = category.Level;
             StoreId = category.StoreId;
         }
     }
