@@ -2,47 +2,60 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EamaShop.Catalog.API.DTO
 {
-    public class ProductDto
+    /// <summary>
+    /// 商品信息
+    /// </summary>
+    public class ProductDTO : ProductCreateDTO
     {
         private readonly Product _product;
-        public ProductDto(Product product)
+        /// <summary>
+        /// init
+        /// </summary>
+        /// <param name="product"></param>
+        public ProductDTO(Product product)
         {
             _product = product ?? throw new ArgumentNullException(nameof(product));
 
-            PictureUris = JsonConvert.DeserializeObject<IEnumerable<string>>(_product.PictureUris);
-
-            Properties = JsonConvert.DeserializeObject<IEnumerable<string>>(_product.Properties);
-
-            Specifications = _product.Specifications.Select(Selector).ToArray();
+            if (_product.PictureUris != null)
+            {
+                PictureUris = JsonConvert.DeserializeObject<IEnumerable<string>>(_product.PictureUris);
+            }
+            if (_product.Properties != null)
+            {
+                Properties = JsonConvert.DeserializeObject<IEnumerable<string>>(_product.Properties);
+            }
+            if (_product.Specifications != null)
+            {
+                Specifications = _product.Specifications.Select(Selector).ToArray();
+            }
         }
 
-        private static SpecificationDto Selector(Specification specification)
+        private static SpecificationDTO Selector(Specification specification)
         {
             if (specification == null)
             {
                 throw new ArgumentNullException(nameof(specification));
             }
 
-            return new SpecificationDto(specification);
+            return new SpecificationDTO(specification);
         }
-        public long Id => _product.Id;
-
-        public long StoreId => _product.StoreId;
-        public string Name => _product.Name;
-
-        public IEnumerable<string> PictureUris { get;  }
-
-        public IEnumerable<SpecificationDto> Specifications { get;  }
-
-        public IEnumerable<string> Properties { get;  }
-
-        public string Description => _product.Description;
-
-        public long CategoryId => _product.CategoryId;
+        /// <summary>
+        /// 商品的Id
+        /// </summary>
+        public long ProductId => _product.Id;
+        /// <summary>
+        /// 商品的创建时间
+        /// </summary>
+        public DateTime CreateTime => _product.CreateTime;
+        /// <summary>
+        /// 最后的编辑时间
+        /// </summary>
+        public DateTime ModifiedTime => _product.ModifiedTime;
     }
 }

@@ -25,7 +25,7 @@ using NLog.Targets;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace EamaShop.Merchant.API
+namespace EamaShop.Catalog.API
 {
     /// <summary>
     /// configer
@@ -82,7 +82,7 @@ namespace EamaShop.Merchant.API
 
             services.AddDbContext<ProductContext>(opt =>
             {
-               // opt.UseNpgsql(Configuration.GetConnectionString("Master"));
+                opt.UseNpgsql(Configuration.GetConnectionString("Master"));
             });
             //services.AddDistributedRedisLock(opt =>
             //{
@@ -95,9 +95,9 @@ namespace EamaShop.Merchant.API
                 {
                     var apiInfo = new Info()
                     {
-                        Title = "Microservice of Merchant",
+                        Title = "Microservice of Catalog",
                         Version = "v1",
-                        Description = $"The HTTP API Microservice of Merchant",
+                        Description = $"The HTTP API Microservice of Catalog is designed as Data-Driven/CURD",
                         TermsOfService = "Terms Of Service"
                     };
                     opt.SwaggerDoc("v1", apiInfo);

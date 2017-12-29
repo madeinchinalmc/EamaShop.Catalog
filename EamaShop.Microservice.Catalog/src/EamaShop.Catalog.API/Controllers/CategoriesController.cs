@@ -7,72 +7,65 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EamaShop.Catalog.API.Respository;
 using Microsoft.AspNetCore.Authorization;
+using EamaShop.Catalog.API.DTO;
+using System.Security.Claims;
+using System.Net;
 
 namespace EamaShop.Catalog.API.Controllers
 {
     /// <summary>
-    /// 商品分类接口
+    /// 商品类目接口
+    /// <para>商品类目不支持多层级，该类目仅用作商家创建商品时，可使用的预定义或自定义的分类名称</para>
     /// </summary>
     [Produces("application/json")]
     [Route("api/Categories")]
     public class CategoriesController : Controller
     {
         private readonly ProductContext _context;
-
+        /// <summary>
+        /// init
+        /// </summary>
+        /// <param name="context"></param>
         public CategoriesController(ProductContext context)
         {
             _context = context;
         }
 
+        #region 修改类目信息
         /// <summary>
-        /// 获取商品类目信息
+        /// 修改类目信息
         /// </summary>
-        /// <param name="id">可选的 不传则获取所有顶级分类，否则获取指定分类下的子类列表</param>
+        /// <param name="parameters">修改的参数信息</param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory([FromRoute] long id = 0)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var category = await _context
-                .Category
-                .SingleOrDefaultAsync(m => m.Id == id, HttpContext.RequestAborted);
-
-            if (category == null)
-            {
-                return NotFound(new { Message = "分类不存在" });
-            }
-
-            return Ok(category);
-        }
-
-        // PUT: api/Categories/5
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutCategory([FromRoute] long id, [FromBody] Category category)
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PutCategory(CategoryPutDTO parameters)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            // mark a category;
+            var temp = new Category() { Id = parameters.Id, Name = parameters.Name, StoreId = parameters.StoreId };
+            var entry = _context.Entry(temp);
+            entry.State = EntityState.Modified;
 
-            if (id != category.Id)
+
+            entry.Property(x => x.CreateTime).IsModified = false;
+            if (User.IsInRole("Admin"))
             {
-                return BadRequest();
+                entry.Property(x => x.StoreId).IsModified = false;
             }
-
-            _context.Entry(category).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoryExists(id))
+                if (!CategoryExists(parameters.Id))
                 {
                     return NotFound(new { Message = "分类不存在，无法修改" });
                 }
@@ -83,25 +76,45 @@ namespace EamaShop.Catalog.API.Controllers
             }
 
             return NoContent();
-        }
+        } 
+        #endregion
 
-        // POST: api/Categories
+        #region 创建商品类目
+        /// <summary>
+        /// 创建商品类目
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostCategory([FromBody] Category category)
+        public async Task<IActionResult> PostCategory([FromBody] CategoryCreateDTO category)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            var isAdminitractor = User.IsInRole("Admin");
+            var entity = new Category()
+            {
+                Name = category.Name,
+                Type = isAdminitractor ? CategoryType.Predefinition : CategoryType.Custome,
+                CreateTime = DateTime.Now,
+                StoreId = category.StoreId
+            };
 
-            _context.Category.Add(category);
+            _context.Category.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategory", new { id = category.Id }, category);
+            return CreatedAtAction("GetCategory", new { id = entity.Id }, entity);
         }
+        #endregion
 
-        // DELETE: api/Categories/5
+        #region 删除商品类目
+        /// <summary>
+        /// 删除商品类目
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteCategory([FromRoute] long id)
@@ -122,6 +135,7 @@ namespace EamaShop.Catalog.API.Controllers
 
             return Ok(category);
         }
+        #endregion
 
         private bool CategoryExists(long id)
         {

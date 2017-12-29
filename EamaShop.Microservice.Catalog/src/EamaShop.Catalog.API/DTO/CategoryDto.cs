@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EamaShop.Catalog.API.DTO
 {
-    public class CategoryDto : CategoryCreateDto
+    public class CategoryDto : CategoryCreateDTO
     {
         public long Id { get; set; }
 

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace EamaShop.Merchant.API
+namespace EamaShop.Catalog.API
 {
     /// <summary>
     /// A global handing filter that runs after an action has thrown <see cref="Exception"/>

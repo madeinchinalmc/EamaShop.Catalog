@@ -19,7 +19,7 @@ namespace EamaShop.Catalog.API.Respository
         /// 创建的门店Id
         /// </summary>
         [Range(1, long.MaxValue)]
-        public long StoreId { get; set; }
+        public long? StoreId { get; set; }
         /// <summary>
         /// 分类的名称
         /// </summary>
@@ -30,5 +30,13 @@ namespace EamaShop.Catalog.API.Respository
         /// 分类的类型
         /// </summary>
         public CategoryType Type { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 最后一次编辑时间
+        /// </summary>
+        public DateTime ModifiedTime { get; set; }
     }
 }

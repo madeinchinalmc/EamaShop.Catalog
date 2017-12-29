@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EamaShop.Merchant.API
+namespace EamaShop.Catalog.API
 {
 
     internal class AuthorizeCheckOperationFilter : IOperationFilter
