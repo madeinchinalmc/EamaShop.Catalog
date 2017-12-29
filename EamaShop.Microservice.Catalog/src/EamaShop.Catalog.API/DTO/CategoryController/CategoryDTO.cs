@@ -7,17 +7,20 @@ using System.Threading.Tasks;
 
 namespace EamaShop.Catalog.API.DTO
 {
-    public class CategoryDto : CategoryCreateDTO
+    /// <summary>
+    /// 商品类目信息
+    /// </summary>
+    public class CategoryDTO : CategoryCreateDTO
     {
-        public long Id { get; set; }
-
-        public int Level { get; set; }
-
-        public CategoryDto()
-        {
-
-        }
-        public CategoryDto(Category category)
+        /// <summary>
+        /// 商品Id
+        /// </summary>
+        public long Id { get; }
+        /// <summary>
+        /// init
+        /// </summary>
+        /// <param name="category"></param>
+        public CategoryDTO(Category category)
         {
             if (category == null)
             {

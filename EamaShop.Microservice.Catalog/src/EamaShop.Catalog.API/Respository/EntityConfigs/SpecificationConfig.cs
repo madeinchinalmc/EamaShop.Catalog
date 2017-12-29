@@ -9,7 +9,7 @@ using EamaShop.Catalog.API.Infrastructures;
 
 namespace EamaShop.Catalog.API.Respository.EntityConfigs
 {
-    public class SpecificationConfig : IEntityTypeConfiguration<Specification>
+    internal class SpecificationConfig : IEntityTypeConfiguration<Specification>
     {
         public void Configure(EntityTypeBuilder<Specification> builder)
         {

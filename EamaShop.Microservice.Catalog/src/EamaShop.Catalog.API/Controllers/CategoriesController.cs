@@ -35,6 +35,7 @@ namespace EamaShop.Catalog.API.Controllers
         /// <summary>
         /// 修改类目信息
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="parameters">修改的参数信息</param>
         /// <returns></returns>
         [HttpPut("{id}")]
@@ -42,14 +43,14 @@ namespace EamaShop.Catalog.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PutCategory(CategoryPutDTO parameters)
+        public async Task<IActionResult> PutCategory(long id, CategoryCreateDTO parameters)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             // mark a category;
-            var temp = new Category() { Id = parameters.Id, Name = parameters.Name, StoreId = parameters.StoreId };
+            var temp = new Category() { Id = id, Name = parameters.Name, StoreId = parameters.StoreId };
             var entry = _context.Entry(temp);
             entry.State = EntityState.Modified;
 
@@ -65,7 +66,7 @@ namespace EamaShop.Catalog.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoryExists(parameters.Id))
+                if (!CategoryExists(id))
                 {
                     return NotFound(new { Message = "分类不存在，无法修改" });
                 }
@@ -76,7 +77,7 @@ namespace EamaShop.Catalog.API.Controllers
             }
 
             return NoContent();
-        } 
+        }
         #endregion
 
         #region 创建商品类目

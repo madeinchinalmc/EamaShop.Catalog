@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EamaShop.Catalog.API.Respository.EntityConfigs
 {
-    public class CategoryConfig : IEntityTypeConfiguration<Category>
+    internal class CategoryConfig : IEntityTypeConfiguration<Category>
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
