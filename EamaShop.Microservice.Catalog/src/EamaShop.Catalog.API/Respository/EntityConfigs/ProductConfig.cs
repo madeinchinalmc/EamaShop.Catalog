@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EamaShop.Catalog.API.Respository.EntityConfigs
 {
-    public class ProductConfig : IEntityTypeConfiguration<Product>
+    internal class ProductConfig : IEntityTypeConfiguration<Product>
     {
         void IEntityTypeConfiguration<Product>.Configure(EntityTypeBuilder<Product> builder)
         {

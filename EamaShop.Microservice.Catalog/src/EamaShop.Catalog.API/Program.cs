@@ -13,7 +13,7 @@ namespace EamaShop.Catalog.API
     /// <summary>
     /// entry
     /// </summary>
-    public class Program
+    class Program
     {
         /// <summary>
         /// entry method
