@@ -74,7 +74,7 @@ namespace EamaShop.Catalog.API.Controllers
                 PictureUris = JsonConvert.SerializeObject(parameters.PictureUris),
                 Properties = JsonConvert.SerializeObject(parameters.Properties),
                 StoreId = parameters.StoreId,
-                Specifications = parameters.Specifications.Where(x => x != null).Select(Selector)
+                Specifications = parameters.Specifications.Where(x => x != null).Select(Selector).ToArray()
             };
 
             await _context.AddAsync(product, HttpContext.RequestAborted);
@@ -179,6 +179,23 @@ namespace EamaShop.Catalog.API.Controllers
 
             return product;
         }
+        #endregion
+
+        #region 删除指定的商品信息
+        /// <summary>
+        /// 删除指定的商品信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute]long id)
+        {
+            _context.Entry(new Product() { Id = id }).State = EntityState.Deleted;
+
+            await _context.SaveChangesAsync(HttpContext.RequestAborted);
+
+            return Ok();
+        } 
         #endregion
     }
 }
