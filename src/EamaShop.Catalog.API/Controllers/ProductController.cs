@@ -1,4 +1,5 @@
-﻿using EamaShop.Catalog.API.DTO;
+﻿using AutoMapper;
+using EamaShop.Catalog.API.DTO;
 using EamaShop.Catalog.API.Respository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +20,16 @@ namespace EamaShop.Catalog.API.Controllers
     public class ProductController : Controller
     {
         private readonly ProductContext _context;
+        private readonly IMapper _mapper;
         /// <summary>
         /// 商品
         /// </summary>
         /// <param name="context"></param>
-        public ProductController(ProductContext context)
+        /// <param name="mapper"></param>
+        public ProductController(ProductContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         #region 创建商品的接口
         /// <summary>
@@ -42,6 +46,12 @@ namespace EamaShop.Catalog.API.Controllers
                 ModelState.TryAddModelError("PictureUris", "There has invalid uri string");
             }
             parameters.Specifications = parameters.Specifications.Where(x => x != null).ToArray();
+            if(parameters.Specifications
+                .SelectMany(x=>x.PictureUris)
+                .Any(x => !Uri.IsWellFormedUriString(x, UriKind.Absolute)))
+            {
+                ModelState.TryAddModelError("Specification.PictureUris", "There has invalid uri string");
+            }
             if (!parameters.Specifications.Any())
             {
                 ModelState.TryAddModelError("Specifications", "规格必须至少有一个");
@@ -50,32 +60,7 @@ namespace EamaShop.Catalog.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            //transform
-            Specification Selector(SpecificationCreateDTO dto)
-            {
-                return new Specification()
-                {
-                    CreateTime = DateTime.Now,
-                    ModifiedTime = DateTime.Now,
-                    Name = dto.Name,
-                    Price = dto.Price,
-                    State = Infrastructures.SpecificationState.OnSell,
-                    StockCount = dto.StockCount,
-
-                };
-            }
-            var product = new Product()
-            {
-                CategoryName = parameters.CategoryName,
-                CreateTime = DateTime.Now,
-                Description = parameters.Description,
-                ModifiedTime = DateTime.Now,
-                Name = parameters.Name,
-                PictureUris = JsonConvert.SerializeObject(parameters.PictureUris),
-                Properties = JsonConvert.SerializeObject(parameters.Properties),
-                StoreId = parameters.StoreId,
-                Specifications = parameters.Specifications.Where(x => x != null).Select(Selector).ToArray()
-            };
+            var product = _mapper.Map<Product>(parameters);
 
             await _context.AddAsync(product, HttpContext.RequestAborted);
 
@@ -118,7 +103,27 @@ namespace EamaShop.Catalog.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Save([FromRoute]long id, [FromBody] ProductCreateDTO parameters)
         {
-            var product = Transform(parameters);
+            if (parameters.PictureUris == null || parameters.PictureUris.Any(x => !Uri.IsWellFormedUriString(x, UriKind.Absolute)))
+            {
+                ModelState.TryAddModelError("PictureUris", "There has invalid uri string");
+            }
+            parameters.Specifications = parameters.Specifications.Where(x => x != null).ToArray();
+            if (parameters.Specifications
+                .SelectMany(x => x.PictureUris)
+                .Any(x => !Uri.IsWellFormedUriString(x, UriKind.Absolute)))
+            {
+                ModelState.TryAddModelError("Specification.PictureUris", "There has invalid uri string");
+            }
+            if (!parameters.Specifications.Any())
+            {
+                ModelState.TryAddModelError("Specifications", "规格必须至少有一个");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var product = _mapper.Map<Product>(parameters);
+
             product.Id = id;
             var entry = _context.Entry(product);
             entry.Property(x => x.StoreId).IsModified = false;
@@ -137,48 +142,7 @@ namespace EamaShop.Catalog.API.Controllers
             }
             return Ok();
         }
-
-        private Product Transform(ProductCreateDTO parameters)
-        {
-            if (parameters.PictureUris == null || parameters.PictureUris.Any(x => !Uri.IsWellFormedUriString(x, UriKind.Absolute)))
-            {
-                ModelState.TryAddModelError("PictureUris", "There has invalid uri string");
-            }
-            parameters.Specifications = parameters.Specifications.Where(x => x != null).ToArray();
-            if (!parameters.Specifications.Any())
-            {
-                ModelState.TryAddModelError("Specifications", "规格必须至少有一个");
-            }
-
-            //transform
-            Specification Selector(SpecificationCreateDTO dto)
-            {
-                return new Specification()
-                {
-                    CreateTime = DateTime.Now,
-                    ModifiedTime = DateTime.Now,
-                    Name = dto.Name,
-                    Price = dto.Price,
-                    State = Infrastructures.SpecificationState.OnSell,
-                    StockCount = dto.StockCount,
-
-                };
-            }
-            var product = new Product()
-            {
-                CategoryName = parameters.CategoryName,
-                CreateTime = DateTime.Now,
-                Description = parameters.Description,
-                ModifiedTime = DateTime.Now,
-                Name = parameters.Name,
-                PictureUris = JsonConvert.SerializeObject(parameters.PictureUris),
-                Properties = JsonConvert.SerializeObject(parameters.Properties),
-                StoreId = parameters.StoreId,
-                Specifications = parameters.Specifications.Where(x => x != null).Select(Selector)
-            };
-
-            return product;
-        }
+        
         #endregion
 
         #region 删除指定的商品信息
@@ -195,7 +159,7 @@ namespace EamaShop.Catalog.API.Controllers
             await _context.SaveChangesAsync(HttpContext.RequestAborted);
 
             return Ok();
-        } 
+        }
         #endregion
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using EamaShop.Catalog.API.DTO;
 using EamaShop.Catalog.API.Respository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -83,6 +86,12 @@ namespace EamaShop.Catalog.API
             services.AddDbContext<ProductContext>(opt =>
             {
                 opt.UseNpgsql(Configuration.GetConnectionString("Master"));
+            });
+
+            services.TryAddSingleton<IMapper>(sp =>
+            {
+                Mapper.Initialize(Configure);
+                return Mapper.Instance;
             });
             //services.AddDistributedRedisLock(opt =>
             //{
@@ -281,6 +290,17 @@ namespace EamaShop.Catalog.API
             };
 
             options.TokenValidationParameters = parameters;
+        }
+        #endregion
+
+        #region AutoMapper
+        private void Configure(IMapperConfigurationExpression config)
+        {
+            config.CreateMap<ProductCreateDTO, Product>()
+                .ForMember(pro => pro.PictureUris, opt => opt.MapFrom(dto => JsonConvert.SerializeObject(dto.PictureUris)))
+                .ForMember(pro => pro.Properties, opt => opt.MapFrom(dto => JsonConvert.SerializeObject(dto.Properties)));
+            config.CreateMap<SpecificationCreateDTO, Specification>()
+                .ForMember(spec => spec.PictureUris, opt => opt.MapFrom(dto => JsonConvert.SerializeObject(dto.PictureUris)));
         }
         #endregion
     }

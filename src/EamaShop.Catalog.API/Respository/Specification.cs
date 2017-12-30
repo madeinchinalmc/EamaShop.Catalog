@@ -43,5 +43,9 @@ namespace EamaShop.Catalog.API.Respository
         /// 规格的状态
         /// </summary>
         public SpecificationState State { get; set; }
+        /// <summary>
+        /// 规格图片
+        /// </summary>
+        public string PictureUris { get; set; }
     }
 }
